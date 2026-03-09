@@ -129,9 +129,9 @@ All platforms deploy the same SPA build from `dist/`. SPA routing handled by `pu
 | Platform | URL | Status |
 |----------|-----|--------|
 | **Cloudflare Pages** | 99 projects (74 pages.dev + 18 custom domains) | 200 |
-| **Railway** | https://blackroad-cloud-production.up.railway.app | 200 |
-| **GitHub** | https://github.com/blackboxprogramming/blackroad-cloud | Public |
-| **Gitea** | http://192.168.4.97:3100/platform/blackroad-cloud | Internal |
+| **Railway** | 22 services, all returning 200 (see below) | 200 |
+| **GitHub** | 21 repos under blackboxprogramming (see below) | Public |
+| **Gitea** | 22 repos under platform/ on Octavia | Internal |
 | **Alice (Pi 400)** | http://192.168.4.49:8080 | 200 |
 | **Cecilia (Pi 5)** | http://192.168.4.96:8080 | 200 |
 | **Lucidia (Pi 5)** | http://192.168.4.38:8081 | 200 |
@@ -150,15 +150,53 @@ npx wrangler pages deploy dist --project-name <name> --commit-dirty=true
 railway up --detach              # Deploy to Railway
 ```
 
+### Railway Services (22/22 live)
+
+| Service | URL |
+|---------|-----|
+| blackroad-cloud | https://blackroad-cloud-production.up.railway.app |
+| blackroad-web | https://blackroad-web-production.up.railway.app |
+| blackroad-os | https://blackroad-os-production.up.railway.app |
+| blackroad-ai | https://blackroad-ai-production.up.railway.app |
+| blackroad-core | https://blackroad-core-production.up.railway.app |
+| blackroad-agents | https://blackroad-agents-production.up.railway.app |
+| blackroad-api-production | https://blackroad-api-production-production.up.railway.app |
+| blackroad-os-orchestrator | https://blackroad-os-orchestrator-production.up.railway.app |
+| blackroad-os-inc | https://blackroad-os-inc-production.up.railway.app |
+| blackroad-education | https://blackroad-education-production.up.railway.app |
+| blackroad-interactive | https://blackroad-interactive-production.up.railway.app |
+| blackroad-media | https://blackroad-media-production.up.railway.app |
+| blackroad-foundation | https://blackroad-foundation-production.up.railway.app |
+| blackroad-ventures | https://blackroad-ventures-production.up.railway.app |
+| blackroad-studio | https://blackroad-studio-production.up.railway.app |
+| blackroad-labs | https://blackroad-labs-production.up.railway.app |
+| blackroad-archive | https://blackroad-archive-production.up.railway.app |
+| blackroad-gov | https://blackroad-gov-production.up.railway.app |
+| blackroad-hardware | https://blackroad-hardware-production.up.railway.app |
+| blackroad-security | https://blackroad-security-production.up.railway.app |
+| blackbox-enterprises | https://blackbox-enterprises-production.up.railway.app |
+| blackboxprogramming | https://blackboxprogramming-production.up.railway.app |
+
+### GitHub Repos (21 new + 107 existing)
+
+All Railway projects mirrored to `github.com/blackboxprogramming/<name>` and `git.blackroad.io/platform/<name>`.
+
 ## Infrastructure
 
 - **99 Cloudflare Pages projects** — all deployed
 - **10 Cloudflare Workers** — api, stripe, verify, fleet, operator, core, dashboard-api, auth, quantum, road
+- **22 Railway services** — all returning 200
+- **128 GitHub repos** — blackboxprogramming org
+- **22 Gitea repos** — platform/ on Octavia
 - **3 Pi web servers** — Alice (:8080), Cecilia (:8080), Lucidia (:8081)
-- **1 Railway service** — blackroad-cloud (production)
-- **1 GitHub repo** — blackboxprogramming/blackroad-cloud (public)
-- **1 Gitea repo** — platform/blackroad-cloud (Octavia)
-- **23 Railway projects** — across the account
 - **2 DigitalOcean droplets** — gematria, anastasia
 - **WireGuard mesh** — 10.8.0.x overlay network
 - **2x Hailo-8 AI accelerators** — 52 TOPS total (Cecilia + Octavia)
+
+### GitHub Actions Secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Pages deployment |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare Pages deployment |
+| `RAILWAY_TOKEN` | Railway deployment |
