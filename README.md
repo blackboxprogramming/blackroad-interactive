@@ -1,6 +1,6 @@
 # BlackRoad Cloud
 
-The unified web platform for BlackRoad OS — 21 page templates deployed across 99 Cloudflare Pages projects serving 48+ custom domains.
+The unified web platform for BlackRoad OS — 21 page templates deployed across 99 Cloudflare Pages projects, Railway, 3 Raspberry Pis, and GitHub.
 
 ## Live Status (2026-03-09)
 
@@ -66,7 +66,7 @@ The unified web platform for BlackRoad OS — 21 page templates deployed across 
 | Charts | Recharts 3.8 |
 | Payments | Stripe (via `stripe.blackroad.io` Worker) |
 | Auth | Clerk (planned) |
-| Hosting | Cloudflare Pages (99 projects) |
+| Hosting | Cloudflare Pages (99) + Railway + 3 Pis + GitHub |
 | Build | 1.0 MB total (`dist/`) |
 | Source | 12,506 lines across 21 pages + 4 libraries |
 
@@ -122,18 +122,43 @@ The unified web platform for BlackRoad OS — 21 page templates deployed across 
 
 ## Deployment
 
+All platforms deploy the same SPA build from `dist/`. SPA routing handled by `public/_redirects`.
+
+### Platforms (all live, tested 2026-03-09)
+
+| Platform | URL | Status |
+|----------|-----|--------|
+| **Cloudflare Pages** | 99 projects (74 pages.dev + 18 custom domains) | 200 |
+| **Railway** | https://blackroad-cloud-production.up.railway.app | 200 |
+| **GitHub** | https://github.com/blackboxprogramming/blackroad-cloud | Public |
+| **Gitea** | http://192.168.4.97:3100/platform/blackroad-cloud | Internal |
+| **Alice (Pi 400)** | http://192.168.4.49:8080 | 200 |
+| **Cecilia (Pi 5)** | http://192.168.4.96:8080 | 200 |
+| **Lucidia (Pi 5)** | http://192.168.4.38:8081 | 200 |
+
+### CI/CD
+
+GitHub Actions workflow (`.github/workflows/deploy.yml`) auto-deploys on push to `main`:
+- Builds with Node 20
+- Deploys to Cloudflare Pages
+- Deploys to Railway
+- Deploys to Pis via rsync (self-hosted runner)
+
 ```bash
 npm run build                    # Build to dist/
 npx wrangler pages deploy dist --project-name <name> --commit-dirty=true
+railway up --detach              # Deploy to Railway
 ```
-
-All 99 projects deploy the same SPA build. SPA routing handled by `public/_redirects` (`/* /index.html 200`).
 
 ## Infrastructure
 
 - **99 Cloudflare Pages projects** — all deployed
 - **10 Cloudflare Workers** — api, stripe, verify, fleet, operator, core, dashboard-api, auth, quantum, road
-- **5 Raspberry Pi nodes** — Alice, Cecilia, Octavia, Aria, Lucidia
+- **3 Pi web servers** — Alice (:8080), Cecilia (:8080), Lucidia (:8081)
+- **1 Railway service** — blackroad-cloud (production)
+- **1 GitHub repo** — blackboxprogramming/blackroad-cloud (public)
+- **1 Gitea repo** — platform/blackroad-cloud (Octavia)
+- **23 Railway projects** — across the account
 - **2 DigitalOcean droplets** — gematria, anastasia
 - **WireGuard mesh** — 10.8.0.x overlay network
 - **2x Hailo-8 AI accelerators** — 52 TOPS total (Cecilia + Octavia)

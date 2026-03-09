@@ -1,0 +1,75 @@
+name: Deploy BlackRoad Cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  deploy-cloudflare:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name blackroad-io --commit-dirty=true
+
+  deploy-railway:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Railway
+        uses: bervProject/railway-deploy@main
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+          service: blackroad-cloud
+
+  deploy-pis:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Pis
+        run: |
+          for TARGET in "pi@192.168.4.49:/var/www/blackroad-cloud/" \
+                        "blackroad@192.168.4.96:/var/www/blackroad-cloud/" \
+                        "octavia@192.168.4.38:/var/www/blackroad-cloud/"; do
+            rsync -az --delete dist/ "$TARGET" 2>/dev/null && echo "Deployed to $TARGET" || echo "Failed: $TARGET"
+          done
